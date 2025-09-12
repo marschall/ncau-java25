@@ -11,7 +11,7 @@ import org.openjdk.jol.info.ClassLayout;
  * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8237767" title="JDK-8237767">Field layout computation overhaul</a>
  */
 class ObjectHeaderTests {
-  
+
   /**
    * Run in Java 25 with
    * -XX:+UseCompactObjectHeaders
@@ -19,26 +19,71 @@ class ObjectHeaderTests {
    */
   @Test
   void compactHeaderAndNewLayouter() {
-    System.out.println(ClassLayout.parseClass(Child.class).toPrintable());
+    System.out.println(ClassLayout.parseClass(Leaf.class).toPrintable());
     /*
 
+JDK 11
+------
+com.netcetera.ncau.java25.vm.ObjectHeaderTests$Leaf object internals:
 OFF  SZ   TYPE DESCRIPTION               VALUE
   0   8        (object header: mark)     N/A
-  8   4    int Parent.parentField        N/A
- 12   4    int Child.childField          N/A
- 
+  8   4        (object header: class)    N/A
+ 12   4    int Root.value                N/A
+ 16   1   byte Root.flags1               N/A
+ 17   3        (alignment/padding gap)   
+ 20   1   byte Intermediate.flags2       N/A
+ 21   3        (alignment/padding gap)   
+ 24   1   byte Leaf.flags3               N/A
+ 25   7        (object alignment gap)    
+Instance size: 32 bytes
+Space losses: 6 bytes internal + 7 bytes external = 13 bytes total
+
+JDK 25 default
+--------------
+OFF  SZ   TYPE DESCRIPTION               VALUE
+  0   8        (object header: mark)     N/A
+  8   4        (object header: class)    N/A
+ 12   4    int Root.value                N/A
+ 16   1   byte Root.flags1               N/A
+ 17   1   byte Intermediate.flags2       N/A
+ 18   1   byte Leaf.flags3               N/A
+ 19   5        (object alignment gap)    
+Instance size: 24 bytes
+Space losses: 0 bytes internal + 5 bytes external = 5 bytes total
+
+
+JDK 25 compact object headers
+-----------------------------
+OFF  SZ   TYPE DESCRIPTION               VALUE
+  0   8        (object header: mark)     N/A
+  8   4    int Root.value                N/A
+ 12   1   byte Root.flags1               N/A
+ 13   1   byte Intermediate.flags2       N/A
+ 14   1   byte Leaf.flags3               N/A
+ 15   1        (object alignment gap)    
+Instance size: 16 bytes
+Space losses: 0 bytes internal + 1 bytes external = 1 bytes total
+
      */
   }
 
-  static class Parent {
+  static class Root {
 
-    int parentField;
+    int value;
+
+    byte flags1;
 
   }
 
-  static class Child extends Parent {
+  static class Intermediate extends Root {
 
-    int childField;
+    byte flags2;
+
+  }
+
+  static class Leaf extends Intermediate {
+
+    byte flags3;
 
   }
 
