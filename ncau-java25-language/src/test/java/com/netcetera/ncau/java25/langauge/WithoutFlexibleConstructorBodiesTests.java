@@ -1,4 +1,4 @@
-package com.netcetera.ncau.java25.api;
+package com.netcetera.ncau.java25.langauge;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
-class WithFlexibleConstructorBodiesTests {
+class WithoutFlexibleConstructorBodiesTests {
   
   @Test
   void validEmployee() {
@@ -37,12 +37,11 @@ class WithFlexibleConstructorBodiesTests {
     private final String officeId;
 
     Employee(int age, String officeId) {
-      // see https://bugs.openjdk.org/browse/JDK-8233268
-      this.officeId = Objects.requireNonNull(officeId, "officeId");
+      super(age);  // Potentially unnecessary work
       if (age < 18 || age > 65) {
         throw new IllegalArgumentException("not of employment age: " + age);
       }
-      super(age);
+      this.officeId = Objects.requireNonNull(officeId, "officeId");
     }
 
     @Override

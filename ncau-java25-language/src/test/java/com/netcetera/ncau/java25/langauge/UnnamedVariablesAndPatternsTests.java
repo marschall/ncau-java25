@@ -1,4 +1,4 @@
-package com.netcetera.ncau.java25.api;
+package com.netcetera.ncau.java25.langauge;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,9 +17,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.jupiter.api.Test;
 
-import com.netcetera.ncau.java25.api.UnnamedVariablesAndPatternsTests.BuildResult.Error;
-import com.netcetera.ncau.java25.api.UnnamedVariablesAndPatternsTests.BuildResult.Failure;
-import com.netcetera.ncau.java25.api.UnnamedVariablesAndPatternsTests.BuildResult.Success;
+import com.netcetera.ncau.java25.langauge.UnnamedVariablesAndPatternsTests.BuildResult.Error;
+import com.netcetera.ncau.java25.langauge.UnnamedVariablesAndPatternsTests.BuildResult.Failure;
+import com.netcetera.ncau.java25.langauge.UnnamedVariablesAndPatternsTests.BuildResult.Success;
 
 class UnnamedVariablesAndPatternsTests {
 
