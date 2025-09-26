@@ -8,12 +8,18 @@ import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.jupiter.api.Test;
+
+import com.netcetera.ncau.java25.api.UnnamedVariablesAndPatternsTests.BuildResult.Error;
+import com.netcetera.ncau.java25.api.UnnamedVariablesAndPatternsTests.BuildResult.Failure;
+import com.netcetera.ncau.java25.api.UnnamedVariablesAndPatternsTests.BuildResult.Success;
 
 class UnnamedVariablesAndPatternsTests {
 
@@ -98,6 +104,45 @@ class UnnamedVariablesAndPatternsTests {
     @Override
     public void close() {
       this.lock.unlock();
+    }
+
+  }
+
+  @Test
+  void lambdaParameter() {
+    Map<String, String> cache = new HashMap<>();
+
+    String value = cache.computeIfAbsent("key", _ -> "default");
+
+    assertEquals("default", value);
+    assertEquals(1, cache.size());
+  }
+
+  @Test
+  void patternVariable() {
+    assertTrue(isSuccessful(new Success()));
+  }
+  
+  private static boolean isSuccessful(BuildResult result) {
+    return switch (result) {
+      case Error _ -> false;
+      case Failure _ -> false;
+      case Success _ -> true;
+    };
+  }
+
+  abstract static sealed class BuildResult {
+
+    static final class Success extends BuildResult {
+
+    }
+
+    static final class Error extends BuildResult {
+
+    }
+
+    static final class Failure extends BuildResult {
+
     }
 
   }
