@@ -1,7 +1,6 @@
 
 
 // module import declarations
-import module java.base;
 import module java.sql;
 
 // compact source file, no class
