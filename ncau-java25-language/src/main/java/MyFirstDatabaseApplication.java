@@ -8,7 +8,7 @@ import module java.sql;
 // instance main method
 void main() throws IOException, SQLException {
   List<Table> tables = new ArrayList<>();
-  
+
   try (var connection = DriverManager.getConnection("jdbc:h2:mem:");
        var preparedStatement = connection.prepareStatement("""
                                                            SELECT table_name, table_type
@@ -25,7 +25,10 @@ void main() throws IOException, SQLException {
 
   }
 
-  // new IO class
-  IO.println(tables);
+  for (var table : tables) {
+    // new IO class
+    // not printf
+    IO.println(table);
+  }
 }
 
