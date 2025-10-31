@@ -86,6 +86,7 @@ class UnnamedVariablesAndPatternsTests {
       assertTrue(true);
     }
 
+    // scopes of spans are other examples
   }
 
   private static AutoReleaseLock autoRelease(Lock lock) {
