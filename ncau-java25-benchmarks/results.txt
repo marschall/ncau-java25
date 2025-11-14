@@ -1,0 +1,13 @@
+Virtual
+=====
+
+Benchmark                           Mode  Cnt           Score          Error  Units
+ThreadLocalBenchmarks.scopedValue  thrpt    5   174312644.689 ±  1325262.962  ops/s
+ThreadLocalBenchmarks.threadLocal  thrpt    5  2503452033.428 ± 54294933.070  ops/s
+
+Platform
+======
+
+Benchmark                           Mode  Cnt           Score          Error  Units
+ThreadLocalBenchmarks.scopedValue  thrpt    5   230360207.845 ± 24030084.009  ops/s
+ThreadLocalBenchmarks.threadLocal  thrpt    5  2456657039.425 ± 78899834.432  ops/s
