@@ -2,7 +2,7 @@
 <ncabuild  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:noNamespaceSchemaLocation="http://software.netcetera.ch/ncabuild/schema/ncabuild-1.1.xsd">
   <ncamaven>
-    <java version="25.0.0" enforceVersion="true"/>
+    <java version="25.0.1" enforceVersion="true"/>
     <maven version="3.9.10" enforceVersion="true">
       <option>-XX:+UseSerialGC -Xmx128m</option>
       <option>-XX:+UseCompactObjectHeaders</option>

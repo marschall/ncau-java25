@@ -35,7 +35,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.6.2</version>
         <configuration>
-        <executable>/Library/Java/JavaVirtualMachines/25.0.0/Contents/Home/bin/java</executable>
+        <executable>/Library/Java/JavaVirtualMachines/25.0.1/Contents/Home/bin/java</executable>
           <arguments>
             <argument>-classpath</argument>
             <!-- automatically creates the classpath using all project dependencies,
