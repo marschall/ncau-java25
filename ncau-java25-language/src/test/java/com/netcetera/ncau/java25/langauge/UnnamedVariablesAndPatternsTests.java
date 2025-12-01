@@ -1,10 +1,14 @@
 package com.netcetera.ncau.java25.langauge;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.net.URL;
+import java.nio.ByteOrder;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -22,6 +26,8 @@ import com.netcetera.ncau.java25.langauge.UnnamedVariablesAndPatternsTests.Build
 import com.netcetera.ncau.java25.langauge.UnnamedVariablesAndPatternsTests.BuildResult.Success;
 
 class UnnamedVariablesAndPatternsTests {
+
+  static final VarHandle LONG_BA_BE = MethodHandles.byteArrayViewVarHandle(long[].class, ByteOrder.BIG_ENDIAN).withInvokeExactBehavior();
 
   @Test
   void exceptionParameter() {
@@ -74,6 +80,14 @@ class UnnamedVariablesAndPatternsTests {
 
   record Point(int x, int y) {
 
+  }
+
+  @Test
+  void arrayGet() {
+    byte[] array = new byte[8];
+    assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
+      long _ = (long) LONG_BA_BE.get(array, -1);
+    });
   }
 
   @Test
