@@ -42,7 +42,7 @@ package com.netcetera.ncau.java25.langauge;
 /// # Block Tags
 ///
 /// @see java.lang.Object
-/// @Deprecated
-final class MarkdownComments {
+@Deprecated
+public final class MarkdownComments {
 
 }
