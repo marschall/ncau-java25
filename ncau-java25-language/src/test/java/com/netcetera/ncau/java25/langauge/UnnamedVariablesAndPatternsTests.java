@@ -83,7 +83,7 @@ class UnnamedVariablesAndPatternsTests {
   }
 
   @Test
-  void arrayGet() {
+  void localVariablePolymorphicSignature() {
     byte[] array = new byte[8];
     assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
       long _ = (long) LONG_BA_BE.get(array, -1);
