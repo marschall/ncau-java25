@@ -21,4 +21,18 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>
+            -XX:StartFlightRecording:filename=${project.build.directory}/unit-tests.jfr
+            -XX:FlightRecorderOptions:stackdepth=128
+          </argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

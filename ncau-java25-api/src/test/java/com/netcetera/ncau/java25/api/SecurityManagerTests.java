@@ -15,8 +15,9 @@ class SecurityManagerTests {
   void setSecurityManager() {
     assertThrows(UnsupportedOperationException.class, () -> System.setSecurityManager(new SecurityManager()));
   }
-  
-  void doP() {
+ 
+  @Test
+  void doPrivileged() {
     AtomicBoolean called = new AtomicBoolean();
     assertTrue(AccessController.doPrivileged((PrivilegedAction<Boolean>) () -> {
       called.set(true);
