@@ -8,9 +8,6 @@ import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
 public class VirtualMachineImpl2 {
-  private static final String FIELD = "field";
-
-  private static final String MASK = "mask";
 
   private static final long SIGQUIT = 0b100; // mask bit for SIGQUIT
 
@@ -22,51 +19,55 @@ public class VirtualMachineImpl2 {
 
   static boolean checkCatchesAndSendQuitTo(Path procPid) throws IOException {
     
-    record Line(String signal, long mask) {
+    record Line(String field, long mask) {
       
       static Line parse(String s) {
-        int endOfName = s.indexOf(':');
-        String signal = s.substring(0, endOfName);
+        int endOfFieldName = s.indexOf(':');
+        String field = s.substring(0, endOfFieldName);
         // skip colon and tab
-        long mask = Long.parseLong(s, endOfName + 2, s.length(), 16);
-        return new Line(signal, mask);
+        long mask = Long.parseLong(s, endOfFieldName + 2, s.length(), 16);
+        return new Line(field, mask);
+      }
+      
+      boolean isHandeled(long signal) {
+        return (this.mask & signal) != 0L;
       }
       
     }
     
-    record ParseResult(boolean quitIgn, boolean quitCgt) {
+    record ParseResult(boolean quitIgnored, boolean quitCaught) {
 
       
       boolean okToSendQuit()  {
         // ignore blocked
-        return !this.quitIgn && this.quitCgt;
+        return !this.quitIgnored && this.quitCaught;
       }
     }
     
     class ParseState {
       
-      boolean quitIgn = false;
-      boolean quitCgt = false;
+      boolean quitIgnored = false;
+      boolean quitCaught = false;
 
-      boolean readIgn = false;
-      boolean readCgt = false;
+      boolean readIgnored = false;
+      boolean readCaught = false;
       
-      void quitCgt(boolean b) {
-        this.quitCgt = b;
-        this.readCgt = true;
+      void quitCaught(boolean b) {
+        this.quitCaught = b;
+        this.readCaught = true;
       }
       
-      void quitIgn(boolean b) {
-        this.quitIgn = b;
-        this.readIgn = true;
+      void quitIgnored(boolean b) {
+        this.quitIgnored = b;
+        this.readIgnored = true;
       }
       
       boolean isDone() {
-        return this.readIgn && this.readCgt;
+        return this.readIgnored && this.readCaught;
       }
       
       ParseResult toResult() {
-        return new ParseResult(this.quitIgn, this.quitCgt);
+        return new ParseResult(this.quitIgnored, this.quitCaught);
       }
       
     }
@@ -80,11 +81,11 @@ public class VirtualMachineImpl2 {
     try (Stream<String> lines = Files.lines(procPid.resolve("status"))) {
       Gatherer<Line, ParseState, ParseResult> toResult = Gatherer.ofSequential(() -> new ParseState(), (state, line, downstream) -> {
         
-        boolean sigquit = (line.mask() & SIGQUIT) != 0L;
+        boolean isSigquitHandeled = line.isHandeled(SIGQUIT);
         
-        switch (line.signal()) {
-          case "SigCgt" -> state.quitCgt(sigquit);
-          case "SigIgn" -> state.quitIgn(sigquit);
+        switch (line.field()) {
+          case "SigCgt" -> state.quitCaught(isSigquitHandeled);
+          case "SigIgn" -> state.quitIgnored(isSigquitHandeled);
         };
 
         if (state.isDone()) {
@@ -95,9 +96,9 @@ public class VirtualMachineImpl2 {
         }
       });
       result = lines.filter(line -> line.startsWith("Sig") && line.indexOf(':') == 6)
-           .map(Line::parse)
-           .gather(toResult)
-           .findAny();
+                    .map(Line::parse)
+                    .gather(toResult)
+                    .findAny();
     }
 
     return result.map(ParseResult::okToSendQuit).orElse(Boolean.FALSE);
