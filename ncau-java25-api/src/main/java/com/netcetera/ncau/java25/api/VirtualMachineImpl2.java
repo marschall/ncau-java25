@@ -18,6 +18,8 @@ public class VirtualMachineImpl2 {
   }
 
   static boolean checkCatchesAndSendQuitTo(Path procPid) throws IOException {
+    // https://man7.org/linux/man-pages/man5/proc_pid_status.5.html
+    // https://man7.org/linux/man-pages/man7/signal.7.html
     
     record Line(String field, long mask) {
       
@@ -29,7 +31,7 @@ public class VirtualMachineImpl2 {
         return new Line(field, mask);
       }
       
-      boolean isHandeled(long signal) {
+      boolean isSignalSet(long signal) {
         return (this.mask & signal) != 0L;
       }
       
@@ -46,11 +48,11 @@ public class VirtualMachineImpl2 {
     
     class ParseState {
       
-      boolean quitIgnored = false;
-      boolean quitCaught = false;
+      private boolean quitIgnored = false;
+      private boolean quitCaught = false;
 
-      boolean readIgnored = false;
-      boolean readCaught = false;
+      private boolean readIgnored = false;
+      private boolean readCaught = false;
       
       void quitCaught(boolean b) {
         this.quitCaught = b;
@@ -62,7 +64,7 @@ public class VirtualMachineImpl2 {
         this.readIgnored = true;
       }
       
-      boolean isDone() {
+      boolean isParsingComplete() {
         return this.readIgnored && this.readCaught;
       }
       
@@ -79,16 +81,16 @@ public class VirtualMachineImpl2 {
 
     Optional<ParseResult> result;
     try (Stream<String> lines = Files.lines(procPid.resolve("status"))) {
-      Gatherer<Line, ParseState, ParseResult> toResult = Gatherer.ofSequential(() -> new ParseState(), (state, line, downstream) -> {
+      Gatherer<Line, ParseState, ParseResult> toResult = Gatherer.ofSequential(ParseState::new, (state, line, downstream) -> {
         
-        boolean isSigquitHandeled = line.isHandeled(SIGQUIT);
+        boolean isSigquit = line.isSignalSet(SIGQUIT);
         
         switch (line.field()) {
-          case "SigCgt" -> state.quitCaught(isSigquitHandeled);
-          case "SigIgn" -> state.quitIgnored(isSigquitHandeled);
+          case "SigCgt" -> state.quitCaught(isSigquit);
+          case "SigIgn" -> state.quitIgnored(isSigquit);
         };
 
-        if (state.isDone()) {
+        if (state.isParsingComplete()) {
           downstream.push(state.toResult());
           return false;
         } else {
